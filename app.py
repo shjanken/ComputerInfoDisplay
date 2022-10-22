@@ -1,7 +1,23 @@
+import sys
+import os
+from typing import List
+
 import tkinter as tk
 from tkinter import StringVar, ttk
 import wmi
-from typing import List
+from PIL import Image
+from pystray import MenuItem, Icon
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class MainPanel():
@@ -10,11 +26,12 @@ class MainPanel():
     current_row: int = 0
 
     def __init__(self, *args, **kwargs):
+        # create and init a main window
         self.root = tk.Tk()
-        # self.title("Computer Info Panel")
         self.root.resizable(False, False)
         self.root.attributes("-alpha", 1)
         self.root.geometry(f"-100+50")
+        self.root.title("Computer Info Display")
         # self.root.overrideredirect(True)
 
         self.main_frame = ttk.Frame(self.root, padding=10)
@@ -22,6 +39,7 @@ class MainPanel():
 
         self.root.rowconfigure(0, weight=1)
         self.root.columnconfigure(0, weight=1)
+        self.root.protocol("WM_DELETE_WINDOW", self.__hide_window)
 
     def addInfoList(self, title: str, msg_list: List[str]) -> None:
         lbf = ttk.LabelFrame(self.main_frame, text=f"  {title}  ")
@@ -37,6 +55,27 @@ class MainPanel():
 
     def start(self):
         self.root.mainloop()
+
+    def __hide_window(self):
+        """hide the window but not close it"""
+        # init tray icon and run it
+        icon_img = Image.open(resource_path('assets/tray_16x.ico'))
+        menu = (MenuItem("Show", self.__showWindow),
+                MenuItem("Quit", self.__destroyWindow))
+        self.icon = Icon("info", icon_img, menu=menu)
+
+        self.root.withdraw()
+        self.icon.run()
+
+    def __destroyWindow(self):
+        """close window and quti app"""
+        self.icon.stop()
+        self.root.destroy()
+
+    def __showWindow(self):
+        """display window from hidden status"""
+        self.icon.stop()
+        self.root.deiconify()
 
 
 def fetchDiskInfo(wmi_client) -> List[str]:
