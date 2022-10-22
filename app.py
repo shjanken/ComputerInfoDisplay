@@ -59,7 +59,7 @@ class MainPanel():
     def __hide_window(self):
         """hide the window but not close it"""
         # init tray icon and run it
-        icon_img = Image.open(resource_path('assets/tray_16x.ico'))
+        icon_img = Image.open(resource_path('assets/tray_32x.ico'))
         menu = (MenuItem("Show", self.__showWindow),
                 MenuItem("Quit", self.__destroyWindow))
         self.icon = Icon("info", icon_img, menu=menu)
