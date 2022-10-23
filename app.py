@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import StringVar, ttk
 import wmi  # type: ignore
 from PIL import Image  # type: ignore
-from pystray import MenuItem  # type: ignore
+from pystray import MenuItem, Icon  # type: ignore
 
 
 def resource_path(relative_path):
@@ -42,6 +42,7 @@ class MainPanel():
         self.root.protocol("WM_DELETE_WINDOW", self.__hide_window)
 
     def addInfoList(self, title, msg_list):
+        """add info list to main window and display these infos"""
         lbf = ttk.LabelFrame(self.main_frame, text=f"  {title}  ")
         lbf.grid(row=self.current_row, column=0, sticky="ew")
         lbf.grid_configure(padx=5, pady=5)
