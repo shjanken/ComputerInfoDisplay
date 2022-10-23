@@ -23,7 +23,7 @@ def resource_path(relative_path):
 class MainPanel():
 
     # save the lastest labelframe's row position
-    current_row: int = 0
+    current_row = 0
 
     def __init__(self, *args, **kwargs):
         # create and init a main window
@@ -41,7 +41,7 @@ class MainPanel():
         self.root.columnconfigure(0, weight=1)
         self.root.protocol("WM_DELETE_WINDOW", self.__hide_window)
 
-    def addInfoList(self, title: str, msg_list: List[str]) -> None:
+    def addInfoList(self, title, msg_list):
         lbf = ttk.LabelFrame(self.main_frame, text=f"  {title}  ")
         lbf.grid(row=self.current_row, column=0, sticky="ew")
         lbf.grid_configure(padx=5, pady=5)
@@ -78,24 +78,16 @@ class MainPanel():
         self.root.deiconify()
 
 
-def fetchDiskInfo(wmi_client) -> List[str]:
+def fetchDiskInfo(wmi_client):
     """fetch the disk info with windows wmi"""
-    info_list = []
 
-    for d in wmi_client.Win32_DiskDrive():
-        info_list.append(f"{d.Caption} :: {d.SerialNumber}")
-
-    return info_list
+    return [f"{d.Caption} :: {d.SerialNumber}" for d in wmi_client.Win32_DiskDrive()]
 
 
-def fetchNetWorkInfo(wmi_client) -> List[str]:
+def fetchNetWorkInfo(wmi_client):
     """fetch network adapter info with windows wmi"""
 
-    info_list = []
-    for n in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-        info_list.append(f"{n.IPAddress[0]} :: {n.MACAddress}")
-
-    return info_list
+    return [f"{n.IPAddress[0]} :: {n.MACAddress}" for n in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True)]
 
 
 w = wmi.WMI()
