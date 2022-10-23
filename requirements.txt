@@ -2,3 +2,4 @@ Pillow==9.2.0
 pyinstaller==5.5
 pystray==0.19.4
 WMI==1.5.1
+winshell==0.6
