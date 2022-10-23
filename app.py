@@ -4,9 +4,9 @@ from typing import List
 
 import tkinter as tk
 from tkinter import StringVar, ttk
-import wmi
-from PIL import Image
-from pystray import MenuItem, Icon
+import wmi  # type: ignore
+from PIL import Image  # type: ignore
+from pystray import MenuItem  # type: ignore
 
 
 def resource_path(relative_path):
@@ -87,7 +87,8 @@ def fetchDiskInfo(wmi_client):
 def fetchNetWorkInfo(wmi_client):
     """fetch network adapter info with windows wmi"""
 
-    return [f"{n.IPAddress[0]} :: {n.MACAddress}" for n in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True)]
+    return [f"{n.IPAddress[0]} :: {n.MACAddress}"
+            for n in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True)]
 
 
 w = wmi.WMI()
