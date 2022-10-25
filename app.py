@@ -76,7 +76,7 @@ class MainPanel:
         self.root.resizable(False, False)
         self.root.attributes("-alpha", 1)
         self.root.geometry(f"-100+50")
-        self.root.title("Computer Info Display")
+        self.root.title("上海二手车交易专网助手v1.0")
         # self.root.overrideredirect(True) # disable window decoration
 
         self.main_frame = ttk.Frame(self.root, padding=10)
@@ -156,7 +156,7 @@ def fetch_os():
 def fetch_network_info(wmi_client):
     """fetch network adapter info with windows wmi"""
 
-    return [f" {n.Description}:{n.IPAddress[0]}:{n.MACAddress}"
+    return [f"网卡:{n.Description}\n IP地址:{n.IPAddress[0]}\n MAC地址:{n.MACAddress}\n"
             for n in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True)]
 
 
