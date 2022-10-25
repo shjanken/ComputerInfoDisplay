@@ -31,6 +31,8 @@ class AutoStarter:
 
     statue: bool = False
 
+    __program_no_running_error = "没有找到程序运行信息"
+
     def __init__(self, wmi_client: wmi.WMI):
         self.wmi_client = wmi_client
         self.statue = (Path(STARTUP_FOLDER) / PROGRAM_NAME).exists()
@@ -40,7 +42,7 @@ class AutoStarter:
         return the process.executablePath"""
         processes = self.wmi_client.Win32_Process(Name=PROGRAM_NAME)
         if not processes:
-            raise OSError("program not running")
+            raise OSError(self.__program_no_running_error)
         return processes[0].ExecutablePath
 
     def set_auto_start(self) -> None:
@@ -49,7 +51,7 @@ class AutoStarter:
         try:
             p = self.search_program_path()
             winshell.copy_file(p, winshell.folder("startup"), no_confirm=True)
-            self.statue = True # copy file success. the program is auto started
+            self.statue = True  # copy file success. the program is auto started
         except OSError:
             raise
 
@@ -99,7 +101,8 @@ class MainPanel:
         try:
             self.starter.set_auto_start()
         except OSError as ex:
-            messagebox.showerror("错误", ex)
+            if self.icon.HAS_NOTIFICATION:
+                self.icon.notify(f"创建开机启动失败：{ex}", "错误")
 
     def __hide_window(self):
         """hide the window but not close it"""
