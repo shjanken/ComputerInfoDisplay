@@ -123,7 +123,7 @@ def fetch_disk_info(wmi_client):
 def fetch_os():
     """fetch info from operating system.
     info msg like: 'system info(arch)'"""
-    return f"{platform.platform()} ({platform.machine()})"
+    return [f"{platform.platform()} ({platform.machine()})"]
 
 
 def fetch_network_info(wmi_client):
@@ -138,7 +138,7 @@ w = wmi.WMI()
 starter = AutoStarter(w)
 
 main = MainPanel(starter)
-main.add_info_list("操作系统类型", fetch_os(w))
+main.add_info_list("操作系统类型", fetch_os())
 main.add_info_list("磁盘序列号", fetch_disk_info(w))
 main.add_info_list("网卡适配器", fetch_network_info(w))
 
