@@ -8,4 +8,4 @@ pyinstaller app.spec
 
 # Screenshot
 
-![screenshot](https://github.com/shjanken/ComputerInfoDisplay/blob/master/img/screen_shot.png?raw=true)
+![screenshot](https://github.com/shjanken/ComputerInfoDisplay/blob/master/img/screenshot.png?raw=true)
