@@ -93,11 +93,11 @@ class MainPanel():
         """hide the window but not close it"""
         # init tray icon and run it
         icon_img = Image.open(resource_path('assets/tray_32x.ico'))
-        menu = (MenuItem("Show", self.__show_window),
-                MenuItem("AutoStart", self.__set_auto_start,
+        menu = (MenuItem("显示", self.__show_window),
+                MenuItem("自启", self.__set_auto_start,
                          checked=lambda i: self.starter.statue),
                 MenuItem(Menu.SEPARATOR, None),
-                MenuItem("Quit", self.__destroy_window))
+                MenuItem("退出", self.__destroy_window))
         self.icon = Icon("info", icon_img, menu=menu)
 
         self.root.withdraw()
