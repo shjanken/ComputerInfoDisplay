@@ -57,7 +57,7 @@ class MainPanel():
         self.root.resizable(False, False)
         self.root.attributes("-alpha", 1)
         self.root.geometry(f"-100+50")
-        self.root.title("Computer Info Display")
+        self.root.title("上海二手车交易专网助手v1.0")
         # self.root.overrideredirect(True) # disable window decoration
 
         self.main_frame = ttk.Frame(self.root, padding=10)
