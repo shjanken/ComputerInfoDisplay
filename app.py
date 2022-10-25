@@ -2,6 +2,7 @@ import sys
 import os
 import platform
 from pathlib import Path
+import winreg as reg
 
 import tkinter as tk
 from tkinter import messagebox
@@ -159,6 +160,13 @@ def fetch_network_info(wmi_client):
             for n in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True)]
 
 
+def fetch_ie_version() -> str:
+    """fetch windows ie's version from registry"""
+    k = reg.OpenKey(reg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Internet Explorer", 0, reg.KEY_READ)
+    v = reg.QueryValueEx(k, "Version")
+    return [v[0]]
+
+
 w = wmi.WMI()
 
 starter = AutoStarter(w)
@@ -167,5 +175,6 @@ main = MainPanel(starter)
 main.add_info_list("操作系统类型", fetch_os())
 main.add_info_list("磁盘序列号", fetch_disk_info(w))
 main.add_info_list("网卡适配器", fetch_network_info(w))
+main.add_info_list("IE版本", fetch_ie_version())
 
 main.start()
