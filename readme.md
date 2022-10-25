@@ -5,3 +5,7 @@
 ```bash
 pyinstaller app.spec
 ```
+
+# Screenshot
+
+![screenshot](https://github.com/shjanken/ComputerInfoDisplay/blob/master/img/screen_shot.png?raw=true)
