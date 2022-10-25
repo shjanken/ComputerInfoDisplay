@@ -1,16 +1,15 @@
 import sys
 import os
-from typing import List
 from pathlib import Path
 
 import tkinter as tk
-from tkinter import StringVar, ttk
+from tkinter import ttk
 import wmi  # type: ignore
 from PIL import Image  # type: ignore
 from pystray import MenuItem, Icon, Menu  # type: ignore
 import winshell  # type: ignore
 
-PROGRAM_NAME = "ComputerInfo"  # the program name at runtime
+PROGRAM_NAME = "ComputerInfo.exe"  # the program name at runtime
 
 
 def resource_path(relative_path):
@@ -32,24 +31,17 @@ class AutoStarter():
     def __init__(self, wmi_client: wmi.WMI):
         self.wmi_client = wmi_client
 
-    def __getProgramRunFolder(self) -> str:
-        """use win32 wmi to get the ComputerInfo process path"""
-        return __file__
+    def search_program_path(self) -> str:
+        """use wmi win32_process find the program process.
+        return the process.executablePath"""
+        processes = self.wmi_client.Win32_Process(Name=PROGRAM_NAME)
+        if not processes:
+            raise OSError("program not running")
+        return processes[0].ExecutablePath
 
-    def setAutoStart(self):
+    def set_auto_start(self) -> None:
         """Copy the program exe file to the autostart folder"""
-        global status
-        program_path = Path(self.__getProgramRunFolder())
-        if not program_path.exists():
-            print(f"{program_path.absolute()} not exists")
-            for d in self.wmi_client.Win32_Process(Name=PROGRAM_NAME):
-                print(d.Executable)
-            return
-        else:
-            autostart_path = winshell.folder("Startup")
-            winshell.copy_file(str(program_path),
-                               autostart_path, no_confirm=True)
-            self.statue = True
+        print(self.search_program_path())
 
 
 class MainPanel():
@@ -72,12 +64,12 @@ class MainPanel():
 
         self.root.rowconfigure(0, weight=1)
         self.root.columnconfigure(0, weight=1)
-        self.root.protocol("WM_DELETE_WINDOW", self.__hideWindow)
+        self.root.protocol("WM_DELETE_WINDOW", self.__hide_window)
 
         # use autostarter instance to set program auto start
         self.starter = autostarter
 
-    def addInfoList(self, title, msg_list):
+    def add_info_list(self, title, msg_list):
         """add info list to main window and display these infos"""
         lbf = ttk.LabelFrame(self.main_frame, text=f"  {title}  ")
         lbf.grid(row=self.current_row, column=0, sticky="ew")
@@ -93,41 +85,41 @@ class MainPanel():
     def start(self):
         self.root.mainloop()
 
-    def __setAutoStart(self):
+    def __set_auto_start(self):
         self.starter.setAutoStart()
 
-    def __hideWindow(self):
+    def __hide_window(self):
         """hide the window but not close it"""
         # init tray icon and run it
         icon_img = Image.open(resource_path('assets/tray_32x.ico'))
-        menu = (MenuItem("Show", self.__showWindow),
-                MenuItem("AutoStart", self.__setAutoStart,
+        menu = (MenuItem("Show", self.__show_window),
+                MenuItem("AutoStart", self.__set_auto_start,
                          checked=lambda i: self.starter.statue),
                 MenuItem(Menu.SEPARATOR, None),
-                MenuItem("Quit", self.__destroyWindow))
+                MenuItem("Quit", self.__destroy_window))
         self.icon = Icon("info", icon_img, menu=menu)
 
         self.root.withdraw()
         self.icon.run()
 
-    def __destroyWindow(self):
+    def __destroy_window(self):
         """close window and quti app"""
         self.icon.stop()
         self.root.destroy()
 
-    def __showWindow(self):
+    def __show_window(self):
         """display window from hidden status"""
         self.icon.stop()
         self.root.deiconify()
 
 
-def fetchDiskInfo(wmi_client):
+def fetch_disk_info(wmi_client):
     """fetch the disk info with windows wmi"""
 
     return [f"{d.Caption} :: {d.SerialNumber}" for d in wmi_client.Win32_DiskDrive()]
 
 
-def fetchNetWorkInfo(wmi_client):
+def fetch_network_info(wmi_client):
     """fetch network adapter info with windows wmi"""
 
     return [f"{n.IPAddress[0]} :: {n.MACAddress}"
@@ -136,10 +128,10 @@ def fetchNetWorkInfo(wmi_client):
 
 w = wmi.WMI()
 
-autostarter = AutoStarter(w)
+starter = AutoStarter(w)
 
-main = MainPanel(autostarter)
-main.addInfoList("磁盘序列号", fetchDiskInfo(w))
-main.addInfoList("网卡适配器", fetchNetWorkInfo(w))
+main = MainPanel(starter)
+main.add_info_list("磁盘序列号", fetch_disk_info(w))
+main.add_info_list("网卡适配器", fetch_network_info(w))
 
 main.start()
