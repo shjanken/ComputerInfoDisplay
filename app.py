@@ -1,6 +1,7 @@
 import sys
 import os
 import platform
+import textwrap
 from pathlib import Path
 import winreg as reg
 
@@ -167,12 +168,12 @@ def fetch_network_info(wmi_client):
     results = []
     for adapter in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True):
         if is_public_network_address(adapter.IPAddress[0]):
-            msg = f"""网卡: {adapter.Description}
-  IP 地址: {adapter.IPAddress[0]}
-  MAC 地址: {adapter.MACAddress}
-"""
+            msg = f"""\
+            网卡: {adapter.Description}
+              IP 地址: {adapter.IPAddress[0]}
+              MAC 地址: {adapter.MACAddress}"""
 
-            results.append(msg)
+            results.append(textwrap.dedent(msg))
 
     return results
 
