@@ -53,14 +53,15 @@ class AutoStarter:
             p = self.search_program_path()
             winshell.copy_file(p, winshell.folder("startup"), no_confirm=True)
             self.is_auto_start = True  # copy file success. the program is auto started
-        except OSError:
-            raise
+        except OSError as ex:
+            raise OSError from ex
 
     def unset_auto_start(self) -> None:
         """Delete the file from user's startup folder"""
         p = Path(STARTUP_FOLDER) / PROGRAM_NAME
         if p.exists() and self.is_auto_start:
-            winshell.delete_file(f"{p.resolve().absolute()}", no_confirm=True, silent=True)
+            winshell.delete_file(
+                f"{p.resolve().absolute()}", no_confirm=True, silent=True)
             self.is_auto_start = False
 
 
@@ -154,15 +155,32 @@ def fetch_os():
 
 
 def fetch_network_info(wmi_client):
-    """fetch network adapter info with windows wmi"""
+    """fetch network adapter info with windows wmi.
+    Remove the private ip address (like: 127.0.0.1, 192.168.x.x)"""
 
-    return [f"网卡:{n.Description}\n IP地址:{n.IPAddress[0]}\n MAC地址:{n.MACAddress}\n"
-            for n in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True)]
+    def is_public_network_address(address: str) -> bool:
+        address_lst = address.split(".")
+        return (address_lst[0] != "127"
+                and address_lst[0] != "192"
+                and address_lst[1] != "168")
+
+    results = []
+    for adapter in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+        if is_public_network_address(adapter.IPAddress[0]):
+            msg = f"""网卡: {adapter.Description}
+  IP 地址: {adapter.IPAddress[0]}
+  MAC 地址: {adapter.MACAddress}
+"""
+
+            results.append(msg)
+
+    return results
 
 
 def fetch_ie_version() -> str:
     """fetch windows ie's version from registry"""
-    k = reg.OpenKey(reg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Internet Explorer", 0, reg.KEY_READ)
+    k = reg.OpenKey(reg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\Internet Explorer", 0, reg.KEY_READ)
     v = reg.QueryValueEx(k, "Version")
     return [v[0]]
 
