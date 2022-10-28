@@ -1,17 +1,17 @@
-import sys
 import os
 import platform
+import sys
 import textwrap
-from pathlib import Path
-import winreg as reg
-
 import tkinter as tk
-from tkinter import messagebox
+import winreg as reg
+from pathlib import Path
 from tkinter import ttk
+from typing import List
+
+import winshell  # type: ignore
 import wmi  # type: ignore
 from PIL import Image  # type: ignore
 from pystray import MenuItem, Icon, Menu  # type: ignore
-import winshell  # type: ignore
 
 PROGRAM_NAME = "ComputerInfo.exe"  # the program name at runtime
 STARTUP_FOLDER = winshell.folder("startup")
@@ -69,7 +69,7 @@ class AutoStarter:
 class MainPanel:
     """main panel display the info message list in the window"""
 
-    # save the lastest labelframe's row position
+    # save the latest labelframe row position
     current_row = 0
 
     def __init__(self, auto_starter: AutoStarter) -> None:
@@ -88,11 +88,11 @@ class MainPanel:
         self.root.columnconfigure(0, weight=1)
         self.root.protocol("WM_DELETE_WINDOW", self.__hide_window)
 
-        # use autostarter instance to set program auto start
+        # use auto_starter instance to set program auto start
         self.starter = auto_starter
 
     def add_info_list(self, title, msg_list):
-        """add info list to main window and display these infos"""
+        """add info list to main window and display info messages"""
         lbf = ttk.LabelFrame(self.main_frame, text=f"  {title}  ")
         lbf.grid(row=self.current_row, column=0, sticky="ew")
         lbf.grid_configure(padx=5, pady=5)
@@ -133,7 +133,7 @@ class MainPanel:
         self.icon.run()
 
     def __destroy_window(self):
-        """close window and quti app"""
+        """close window and quit app"""
         self.icon.stop()
         self.root.destroy()
 
@@ -149,16 +149,15 @@ def fetch_disk_info(wmi_client):
     return [f"{d.Caption} :: {d.SerialNumber}" for d in wmi_client.Win32_DiskDrive()]
 
 
-def fetch_os():
+def fetch_os() -> List[str]:
     """fetch info from operating system.
     info msg like: 'system info(arch)'"""
     return [f"{platform.platform()} ({platform.machine()})"]
 
 
-def fetch_network_info(wmi_client):
+def fetch_network_info(wmi_client: wmi.WMI) -> List[str]:
     """fetch network adapter info with windows wmi.
     Remove the private ip address (like: 127.0.0.1, 192.168.x.x)"""
-
     def is_public_network_address(address: str) -> bool:
         address_lst = address.split(".")
         return (address_lst[0] != "127"
@@ -178,8 +177,8 @@ def fetch_network_info(wmi_client):
     return results
 
 
-def fetch_ie_version() -> str:
-    """fetch windows ie's version from registry"""
+def fetch_ie_version() -> List[str]:
+    """fetch windows ie version from registry"""
     k = reg.OpenKey(reg.HKEY_LOCAL_MACHINE,
                     r"SOFTWARE\Microsoft\Internet Explorer", 0, reg.KEY_READ)
     v = reg.QueryValueEx(k, "Version")
