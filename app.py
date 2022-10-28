@@ -61,7 +61,7 @@ class AutoStarter:
         p = Path(STARTUP_FOLDER) / PROGRAM_NAME
         if p.exists() and self.is_auto_start:
             winshell.delete_file(
-                f"{p.resolve().absolute()}", no_confirm=True, silent=True)
+                f"{p.resolve().absolute()}", no_confirm=True, silent=True, allow_undo=False)
             self.is_auto_start = False
 
 
