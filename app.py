@@ -146,7 +146,8 @@ class MainPanel:
 def fetch_disk_info(wmi_client):
     """fetch the disk info with windows wmi"""
 
-    return [f"{d.Caption} :: {d.SerialNumber}" for d in wmi_client.Win32_DiskDrive()]
+    return [f"{d.Caption} :: {d.SerialNumber}"
+            for d in wmi_client.Win32_DiskDrive()]
 
 
 def fetch_os() -> List[str]:
@@ -158,6 +159,7 @@ def fetch_os() -> List[str]:
 def fetch_network_info(wmi_client: wmi.WMI) -> List[str]:
     """fetch network adapter info with windows wmi.
     Remove the private ip address (like: 127.0.0.1, 192.168.x.x)"""
+
     def is_public_network_address(address: str) -> bool:
         address_lst = address.split(".")
         return (address_lst[0] != "127"
