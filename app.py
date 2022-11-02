@@ -50,12 +50,9 @@ class AutoStarter:
     def set_auto_start(self) -> None:
         """Copy the program exe file to the autostart folder, no confirm.
         if cat not found the program execute path, throw os error"""
-        try:
-            p = self.search_program_path()
-            winshell.copy_file(p, winshell.folder("startup"), no_confirm=True)
-            self.is_auto_start = True  # copy file success. the program is auto started
-        except OSError as ex:
-            raise OSError from ex
+        p = self.search_program_path()
+        winshell.copy_file(p, winshell.folder("startup"), no_confirm=True)
+        self.is_auto_start = True  # copy file success, update state               
 
     def unset_auto_start(self) -> None:
         """Delete the file from user's startup folder"""
@@ -162,9 +159,7 @@ def fetch_network_info(wmi_client: wmi.WMI) -> List[str]:
     private network addres: 127.x.x.x, 192.168.x.x"""
 
     def is_public_network_address(address: str) -> bool:
-        [first, second, *other] = address.split(".")
-
-        print(f"f: {first}, s: {second}, others: {other}")
+        [first, second, *_] = address.split(".")
         return (first != "127") and (first != "192" and second != "168")
 
     results = []
