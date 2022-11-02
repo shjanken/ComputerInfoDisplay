@@ -158,13 +158,14 @@ def fetch_os() -> List[str]:
 
 def fetch_network_info(wmi_client: wmi.WMI) -> List[str]:
     """fetch network adapter info with windows wmi.
-    Remove the private ip address (like: 127.0.0.1, 192.168.x.x)"""
+    Remove the private ip address.
+    private network addres: 127.x.x.x, 192.168.x.x"""
 
     def is_public_network_address(address: str) -> bool:
-        address_lst = address.split(".")
-        return (address_lst[0] != "127"
-                and address_lst[0] != "192"
-                and address_lst[1] != "168")
+        [first, second, *other] = address.split(".")
+
+        print(f"f: {first}, s: {second}, others: {other}")
+        return (first != "127") and (first != "192" and second != "168")
 
     results = []
     for adapter in wmi_client.Win32_NetworkAdapterConfiguration(IPEnabled=True):
