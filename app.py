@@ -91,13 +91,11 @@ class MainPanel:
     def add_info_list(self, title, msg_list):
         """add info list to main window and display info messages"""
         lbf = ttk.LabelFrame(self.main_frame, text=f"  {title}  ")
-        lbf.grid(row=self.current_row, column=0, sticky="ew")
-        lbf.grid_configure(padx=5, pady=5)
+        lbf.pack(pady=5, fill=tk.BOTH)
 
         for idx, msg in enumerate(msg_list):
             lb = ttk.Label(lbf, text=msg)
-            lb.grid(column=0, row=idx, sticky="ew")
-            lb.grid_configure(padx=10)
+            lb.pack(padx=5, fill=tk.BOTH)
 
         self.current_row += 1  # set next labelframe display row index
 
