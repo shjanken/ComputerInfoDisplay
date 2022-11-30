@@ -66,9 +66,6 @@ class AutoStarter:
 class MainPanel:
     """main panel display the info message list in the window"""
 
-    # save the latest labelframe row position
-    current_row = 0
-
     def __init__(self, auto_starter: AutoStarter) -> None:
         # create and init a main window
         self.root = tk.Tk()
@@ -96,8 +93,6 @@ class MainPanel:
         for idx, msg in enumerate(msg_list):
             lb = ttk.Label(lbf, text=msg)
             lb.pack(padx=5, fill=tk.BOTH)
-
-        self.current_row += 1  # set next labelframe display row index
 
     def start(self):
         self.root.mainloop()
